@@ -13,20 +13,23 @@ require(pheatmap)
 require(grDevices)
 require(tidyr)
 
-# Loading data
-tax_metadata <- read.table(file = "metadata.tsv", sep="\t", header = TRUE)
-table_output <- read.delim(file = "table-medb30.tsv", skip = 1)
+# Loading data - put in file path for metadata and table if different
+tax_metadata <- read.table(file = "data/metadata.tsv", sep="\t", header = TRUE)
+table_output <- read.delim(file = "data/table-medb30.tsv", skip = 1)
 tax <- merge(tax_metadata, table_output, by.x = "Feature.ID", by.y = "X.OTU.ID")
 
+# Combing taxonomic and qiime output table
 new_columns <- str_split_fixed(as.character(tax$Taxon), ";", 7)
 colnames(new_columns) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
 taxmat <- cbind(new_columns, tax)
 
-qiimegen_tree <- qza_to_phyloseq(tree = "rooted-tree-medb30.qza")
+qiimegen_tree <- qza_to_phyloseq(tree = "data/rooted-tree-medb30.qza")
 
-# Creating phyloseq packages
+# Creating phyloseq data
 
 ## Sample data
+# 'type' variable is 'D' if sample was sequenced after collection and 'C' if 
+# sample was sequenced after culturing
 type <- substring(colnames(taxmat[12:ncol(taxmat)]), first = 1, last = 1)
 location <- c()
 for(i in 1:94){location <- c(location, strsplit(colnames(taxmat[12:ncol(taxmat)]), "_")[[i]][2])}
@@ -36,6 +39,7 @@ sampdata <- cbind(type, location, timepoint, samples)
 rownames(sampdata) <- colnames(taxmat[12:ncol(taxmat)])
 SAM <- sample_data(data.frame(sampdata, stringsAsFactors=FALSE))
 
+# Setting 'location_type' variable
 rural <- c("KSR", "Preston", "Terracotta")
 suburban <- c("Aviemore", "Rouge", "BruceH")
 urban <- c("Cedarvale", "Grenadier", "Humber")
@@ -53,6 +57,7 @@ for(i in 1:length(SAM$location)){
 }
 SAM$location_type <- location_type
 
+# 'culture' variable is the media the cultured samples were cultured in 
 culture <- c()
 for(i in 1:length(SAM$samples)){
   if(SAM$type[i] == "C"){

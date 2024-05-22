@@ -30,16 +30,19 @@ simpson_index <- function(sampleid, data) {
 }
 div_table_gen <- function(data){
   all_samples <- colnames(data)
+  # Initialize empty list for each statistic
   shannon_list <- c()
   richness_list <- c()
   eveness_list <- c()
   simpson_list <- c()
+  # Loop through all samples calculating each statistic
   for(samp in all_samples){
     shannon_list <- c(shannon_list, shannon_index(samp, data))
     richness_list <- c(richness_list, richness(samp, data))
     eveness_list <- c(eveness_list, eveness(samp,data))
     simpson_list <- c(simpson_list, 1/simpson_index(samp,data))
   }
+  # Present resulting data in a table
   div_table <- data.frame ( Shannon = shannon_list,
                             Richness = richness_list,
                             Eveness = eveness_list,
@@ -47,8 +50,6 @@ div_table_gen <- function(data){
   rownames(div_table) <- all_samples
   div_table
 }
-
-
 
 # Compute diversity statistics for all samples
 otu <- as.data.frame(otu_table(physeq_rarefy))
@@ -152,27 +153,3 @@ anova(fit)
 # Blocked ANOVA timepoint
 output_table_D_t <- output_table_D[which(output_table_D$timepoint %in% c("1", "2")),]
 output_table_C_t <- output_table_C[which(output_table_C$timepoint %in% c("1", "2")),]
-
-leveneTest(Shannon ~ timepoint, output_table_D_t)
-fit <- lm(Shannon~timepoint + location ,data=output_table_D_t)
-anova(fit)
-
-leveneTest(Shannon ~ timepoint, output_table_C_t)
-fit <- lm(Shannon~timepoint + location + culture,data=output_table_C_t)
-anova(fit)
-
-leveneTest(Eveness ~ timepoint, output_table_D_t)
-fit <- lm(Eveness~timepoint + location ,data=output_table_D_t)
-anova(fit)
-
-leveneTest(Eveness ~ timepoint, output_table_C_t)
-fit <- lm(Eveness~timepoint + location + culture,data=output_table_C_t)
-anova(fit)
-
-leveneTest(Richness ~ timepoint, output_table_D_t)
-fit <- lm(Richness~timepoint + location ,data=output_table_D_t)
-anova(fit)
-
-leveneTest(Richness ~ timepoint, output_table_C_t)
-fit <- lm(Richness~timepoint + location + culture,data=output_table_C_t)
-anova(fit)

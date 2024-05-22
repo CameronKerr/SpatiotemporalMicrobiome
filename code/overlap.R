@@ -22,6 +22,7 @@ overlapmatrix_gen <- function(data){
   rownames(overlapmatrix) <- all_samples
   pb <- txtProgressBar(min = 0,max = n_samp^2,style = 3,   width = 100, char = "=")
   i <- 0
+  # Loop through each combination of samples and calculate the morisita index
   for(n in 1:n_samp){
     for(m in 1:n_samp){
       i <- i + 1
@@ -37,11 +38,13 @@ overlapmatrix_gen <- function(data){
   diag(overlapmatrix) <- 1
   overlapmatrix
 } 
+
 # Generating heatmap function
 overlapheatmap_gen <- function(overlapmatrix){
   annotation <- as.data.frame(matrix(NA, nrow=nrow(overlapmatrix)))
   rownames(annotation) <- rownames(overlapmatrix)
   
+  # Create metadata to present along with heatmap
   Urban <- c("Cedarvale", "Humber", "Grenadier")
   Rural <- c("Preston", "KSR", "Terracotta")
   Suburban <- c("Rouge", "Aviemore", "Bruce")
@@ -65,6 +68,7 @@ overlapheatmap_gen <- function(overlapmatrix){
     } else {annotation$area[i] <- "Suburban"}
   }
   annotation <- annotation[2:length(annotation)]
+ # Assign colors to each metadata category 
   ann_colors <- list(
     type = c(C = "#FFFF00", D = "#1CE6FF"),
     location = c(Aviemore = "#FF34FF", BruceH = "#FF4A46", Cedarvale = "#008941", 
@@ -81,6 +85,6 @@ overlapheatmap_gen <- function(overlapmatrix){
 otu <- as.data.frame(otu_table(physeq_rarefy))
 moroverlap_df <- overlapmatrix_gen(otu)
 unifracdist <- as.matrix(distance(physeq_rarefy, method="unifrac"))
-
+# Generate heatmap for each of the overlap statistics
 overlapheatmap_gen(unifracdist)
 overlapheatmap_gen(moroverlap_df)

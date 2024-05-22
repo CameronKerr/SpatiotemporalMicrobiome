@@ -4,13 +4,14 @@
 
 # Functions for testing
 gen_permanovadf <- function(dist_mat, sampdata, runtype = T, runculture = T){
-  # Generates a datframe which summarizes the adonis tests for all categorical
+  # Generates a dataframe which summarizes the adonis tests for all categorical
   # variables
   all_adonis <- data.frame(matrix(data=NA, nrow=5, ncol=4))
   rownames(all_adonis) <- c("Sample Type", "Location", "Timepoint", "Location Type", 
                             "Culture")
   colnames(all_adonis) <- c("SSq", "R2", "F", "p")
   
+  # If 'runtype' is True an adonis test is completed grouping samples by on-site vs cultured-samples
   if(runtype){
     adonis_type <- adonis2(as.dist(dist_mat)~type, data=as(sample_data(sampdata), "data.frame"), 
                            permutations = 1000)
@@ -25,6 +26,7 @@ gen_permanovadf <- function(dist_mat, sampdata, runtype = T, runculture = T){
   adonis_location_type <- adonis2(as.dist(dist_mat)~location_type, data=as(sample_data(sampdata), "data.frame"), 
                                   permutations = 1000)
   all_adonis[4,] <- adonis_location_type[1, c(2,3,4,5)]
+  # If 'runtype' is True an adonis test is completed grouping samples by the type of media
   if(runculture){
     adonis_culture <- adonis2(as.dist(dist_mat)~culture, data=as(sample_data(sampdata), "data.frame"), 
                               permutations = 1000)
@@ -32,6 +34,7 @@ gen_permanovadf <- function(dist_mat, sampdata, runtype = T, runculture = T){
   }
   all_adonis
 }
+
 gen_betadf <- function(dist_mat, sampdata, runtype = T, runculture = T){
   # Generates a datframe which summarizes the beta dispersal tests for all 
   # categorical variables
