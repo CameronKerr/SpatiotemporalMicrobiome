@@ -58,7 +58,7 @@ gen_betadf <- function(dist_mat, sampdata, runtype = T, runculture = T){
 
 ## PCA Ordination
 ordu = ordinate(physeq_rarefy, method="PCoA", distance = "unifrac")
-myp <- plot_ordination(physeq_rarefy, ordu, color = "type") + 
+myp <- plot_ordination(physeq_rarefy, ordu, color = "location", shape = "location_type") + 
   geom_point(size = 2.5) + ggtitle("All samples - Unifrac PCoA") +
   theme(axis.title.y = element_text(size = 13, vjust=0.5), 
         axis.title.x = element_text(size = 13),
